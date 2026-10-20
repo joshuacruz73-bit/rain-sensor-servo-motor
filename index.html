@@ -4,11 +4,416 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Karinderya ni Andreng</title>
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-dark: #111827;
+        --bg-mid: #1f2937;
+        --panel: #f4d7a7;
+        --panel-dark: #7a5127;
+        --panel-alt: #d9a35f;
+        --gold: #f6d365;
+        --green: #3d9e5b;
+        --red: #d35555;
+        --blue: #4d8ae6;
+        --cream: #f8f4ee;
+        --text-dark: #1f1b16;
+        --shadow: rgba(0, 0, 0, 0.35);
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        font-family: "Courier New", monospace;
+        background: linear-gradient(180deg, #0d1018 0%, #1a2333 100%);
+        color: var(--text-dark);
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        image-rendering: pixelated;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      #game-shell {
+        position: relative;
+        width: min(1200px, 95vw);
+        height: min(760px, 92vh);
+        overflow: hidden;
+        border: 6px solid #0e0e0e;
+        border-radius: 14px;
+        background: #1d2636;
+        box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+      }
+
+      .screen {
+        position: absolute;
+        inset: 0;
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      #menu-screen {
+        display: grid;
+        grid-template-columns: 1.3fr 0.9fr;
+        background: linear-gradient(180deg, #f3d8aa 0%, #cba06d 100%);
+      }
+
+      .menu-illustration {
+        position: relative;
+        background:
+          linear-gradient(180deg, rgba(135, 206, 235, 0.75), rgba(255, 255, 255, 0.1)),
+          linear-gradient(0deg, #8cc36c 0%, #7fcf7d 20%, #8bc3f1 20%, #8bc3f1 70%, #5ea0d1 70%, #386573 100%);
+        overflow: hidden;
+      }
+
+      .pixel-art-house,
+      .pixel-art-table,
+      .pixel-art-stool {
+        position: absolute;
+        image-rendering: pixelated;
+      }
+
+      .pixel-art-house {
+        left: 18%;
+        bottom: 12%;
+        width: 260px;
+        height: 180px;
+        background: linear-gradient(180deg, #b26d3e 0%, #92552f 100%);
+        border: 6px solid #3f2b1f;
+        box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .pixel-art-house::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 20px;
+        background: #884923;
+      }
+
+      .pixel-art-house::after {
+        content: "";
+        position: absolute;
+        left: 40px;
+        top: 60px;
+        width: 170px;
+        height: 90px;
+        background: repeating-linear-gradient(
+          90deg,
+          #f7d69d 0,
+          #f7d69d 18px,
+          #d49d66 18px,
+          #d49d66 36px
+        );
+        border: 6px solid #4f3324;
+      }
+
+      .pixel-art-table {
+        right: 18%;
+        bottom: 16%;
+        width: 200px;
+        height: 90px;
+        background: linear-gradient(180deg, #9b632d, #6c401e);
+        border: 6px solid #3d2413;
+        box-shadow: 0 14px 0 rgba(0,0,0,0.2);
+      }
+
+      .pixel-art-table::before {
+        content: "";
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 12px;
+        height: 20px;
+        background: #d8b07a;
+        box-shadow: 0 28px 0 #d8b07a;
+      }
+
+      .pixel-art-stool {
+        left: 52%;
+        bottom: 12%;
+        width: 60px;
+        height: 120px;
+        background: linear-gradient(180deg, #c57c32, #765026);
+        border: 6px solid #362010;
+      }
+
+      .menu-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        padding: 40px 24px;
+        background: rgba(32, 21, 8, 0.18);
+      }
+
+      .menu-panel h1 {
+        font-size: clamp(2.2rem, 3.2vw, 4rem);
+        text-align: center;
+        color: #201813;
+        text-shadow: 3px 3px #f5e0a8;
+        letter-spacing: 1px;
+      }
+
+      .menu-buttons,
+      .button-row,
+      .board-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        border: 4px solid #1f1f1f;
+        border-radius: 8px;
+        padding: 14px 24px;
+        cursor: pointer;
+        transition: transform 0.12s ease, filter 0.15s ease;
+        box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .primary-btn {
+        background: linear-gradient(180deg, #f4dd7a, #ecc45d);
+        color: #1b160d;
+      }
+
+      .secondary-btn {
+        background: linear-gradient(180deg, #d9eaf8, #b7d5f5);
+        color: #13243d;
+      }
+
+      .primary-btn:hover,
+      .secondary-btn:hover {
+        filter: brightness(1.05);
+        transform: translateY(-2px);
+      }
+
+      .panel {
+        width: min(780px, 80%);
+        margin: 8% auto 0;
+        background: linear-gradient(180deg, #f1d6a1, #d8a864);
+        border: 6px solid #3a2b1f;
+        border-radius: 12px;
+        box-shadow: 0 10px 0 rgba(59, 38, 21, 0.5);
+        padding: 28px;
+      }
+
+      #signin-screen h2,
+      #board-screen h2,
+      #ending-screen h2,
+      #secret-scene h2 {
+        text-align: center;
+        margin-bottom: 18px;
+        font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+      }
+
+      #signin-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      #signin-form label {
+        font-weight: 700;
+      }
+
+      #signin-form input {
+        border: 4px solid #34261a;
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: #fffaf1;
+        font-size: 1rem;
+      }
+
+      #game-screen {
+        background: linear-gradient(180deg, #2a3547 0%, #111827 100%);
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(110px,1fr));
+        gap: 12px;
+        padding: 18px 18px 0;
+      }
+
+      .hud-item {
+        background: rgba(255,255,255,0.12);
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 10px;
+        padding: 10px 12px;
+        text-align: center;
+        color: #f1f5ff;
+      }
+
+      .hud-item .label {
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.85;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .story-scene {
+        margin: 18px auto 0;
+        width: min(1000px, 92%);
+        background: linear-gradient(180deg, rgba(9, 16, 24, 0.82), rgba(18, 25, 35, 0.9));
+        border: 5px solid #d9b677;
+        border-radius: 14px;
+        box-shadow: inset 0 0 0 4px rgba(0,0,0,0.35);
+        padding: 24px;
+      }
+
+      .scene-badge {
+        display: inline-block;
+        background: #e7c46a;
+        color: #1d150d;
+        font-weight: 700;
+        border-radius: 100px;
+        padding: 8px 14px;
+        margin-bottom: 12px;
+      }
+
+      .scene-title {
+        color: #f7f3db;
+        font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+        margin-bottom: 16px;
+      }
+
+      .narration-box {
+        background: rgba(255,255,255,0.08);
+        border: 3px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        color: #f8f7f1;
+        min-height: 180px;
+        padding: 18px 20px;
+        line-height: 1.7;
+        font-size: 1.06rem;
+      }
+
+      .choice-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .choice-btn {
+        width: 100%;
+        min-height: 72px;
+        background: linear-gradient(180deg, #f5d98d, #d89f4f);
+        border: 4px solid #3b2a17;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #1b150d;
+        font-weight: 700;
+        padding: 12px 16px;
+        text-align: left;
+        box-shadow: 0 7px 0 rgba(34, 17, 8, 0.55);
+      }
+
+      .board-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .leaderboard-card {
+        background: rgba(255,255,255,0.18);
+        border: 4px solid rgba(20,15,7,0.4);
+        border-radius: 12px;
+        padding: 18px;
+      }
+
+      .leaderboard-card h3 {
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+      }
+
+      .leaderboard-card ol {
+        list-style: decimal inside;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 1rem;
+        color: #241912;
+      }
+
+      .board-message {
+        margin-top: 16px;
+        min-height: 28px;
+        font-weight: 700;
+        color: #1b2a14;
+        text-align: center;
+      }
+
+      .ending-box,
+      .secret-box {
+        min-height: 140px;
+        margin-bottom: 18px;
+      }
+
+      .secret-badge {
+        display: inline-block;
+        background: #e9d377;
+        border: 4px solid #2c2417;
+        border-radius: 8px;
+        padding: 8px 12px;
+        text-transform: uppercase;
+        font-size: 0.86rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      @media (max-width: 840px) {
+        #menu-screen {
+          grid-template-columns: 1fr;
+        }
+
+        .menu-panel {
+          padding-top: 12px;
+        }
+
+        .board-columns,
+        .choice-container,
+        .hud {
+          grid-template-columns: 1fr;
+        }
+
+        #game-shell {
+          width: min(98vw, 100%);
+          height: min(94vh, 100%);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="game-shell">
-      <div id="scene-layer" class="scene-layer hidden"></div>
       <div id="menu-screen" class="screen active">
         <div class="menu-illustration">
           <div class="pixel-art-house"></div>
@@ -122,6 +527,518 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+      const STORAGE_KEY = "karinderya-ni-andreng-save";
+
+      const story = [
+        {
+          id: "day1",
+          day: "Day 1",
+          title: "Himigs ng Paaralan at Bahay",
+          narrative:
+            "Nasa klase si Andreng sa TVL-ICT. Nagtatalakayan sila ni Sir Tris tungkol sa Entrepreneurship, at biglang may text si Mang Cruz na may problema sa bahay. Umuwi siya ng may kaba at nakita ang ama na nakaupo sa mesa, worried at halos mawalan ng pag-asa. 'Anak, broke na tayo at may utang,' sabi ng ama. Naramdaman ni Andreng ang bigat ng responsibilidad sa kanyang balikat.",
+          choices: [
+            {
+              text: "Mag-aral nang mabuti at tulungan ang ama sa pag-iisip ng solusyon.",
+              points: 20,
+              next: "day2",
+              good: true,
+            },
+            {
+              text: "Maghanap ng shortcut at ipilit ang mabilisang kita kahit risky.",
+              points: 15,
+              next: "day2",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "day2",
+          day: "Day 2",
+          title: "Ang Tulong ni Anyapot",
+          narrative:
+            "Dumating ang tawag ni Anyapot. Nalaman niya ang problema ni Andreng dahil sa kwento ng kanyang ina, si Angeline. Nag-alok siya ng tulong at binigay ang ₱10,000 para sa pamilya. Pero habang nag-iisip si Andreng ng paraan, naakit siya sa sugal at hindi niya nalaman na unti-unti na itong naglalaho sa kanyang mga kamay.",
+          choices: [
+            {
+              text: "Ipagkatiwala ang pera sa mas matalinong negosyo, hindi sa sugal.",
+              points: 22,
+              next: "day3",
+              good: true,
+            },
+            {
+              text: "Maglaro ng sabong at ipagsapalaran ang lahat.",
+              points: 18,
+              next: "day3",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "day3",
+          day: "Day 3",
+          title: "Pagkahulog sa Kalsada",
+          narrative:
+            "Nawala ang pera. Isang araw, nakita si Andreng sa kalsada, basa sa ulan, umiiyak at halos nakalimutan ang sarili. Nagbalik ang alaala ng pagkatalo at ng mga maling desisyon. Anyapot ang tumawag at nakita siya na nakahiga sa gilid ng daan, umiiyak at humihingi ng tawad. 'Nakontra ko ang tiwala mo,' sabi ni Andreng. Pero si Anyapot ay hindi sumuko sa kanya.",
+          choices: [
+            {
+              text: "Humingi ng tawad, aminin ang pagkakamali, at magpursige ulit.",
+              points: 25,
+              next: "day4",
+              good: true,
+            },
+            {
+              text: "Itago ang totoo at magtago sa hiya hanggang mawala ang problema.",
+              points: 15,
+              next: "day4",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "day4",
+          day: "Day 4",
+          title: "FoodLoop at ang Simula ng Karinderya",
+          narrative:
+            "Hindi nagpatinag si Anyapot. Binigyan niya ulit si Andreng ng ₱20,000 at kasama ng ama, sinimulan nila ang karinderya sa bahay. Nagsimula silang magtayo ng FoodLoop. Puno ng pag-asa ang bawat piraso ng ulam at bawat kutsara. 'Para sa pamilya, kailangan maging matatag tayo,' sabi ni Mang Cruz habang nagluluto si Andreng.",
+          choices: [
+            {
+              text: "Gumawa ng flexible menu at magtrabaho nang masipag sa araw-araw.",
+              points: 21,
+              next: "day17",
+              good: true,
+            },
+            {
+              text: "Magmadali at ipagbili ang mga pagkain na may mababang kalidad.",
+              points: 17,
+              next: "day17",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "day17",
+          day: "Day 17",
+          title: "Pangalawang Hamon",
+          narrative:
+            "Unti-unti nang umunlad ang karinderya. Pero biglang may limang dating kaibigan ang bumisita sa FoodLoop: si Carlong, Franko, at Hirkuliys, kasama ang ilang dating kaklase na nagbahagi ng sama-samang pagkakaibigan. Hindi kasama si Anyapot. Nakita nila ang pagbubukas ng negosyo ni Andreng at sinimulan nilang siraan ang lugar sa pamamagitan ng pag-egg. Nawala ang katahimikan at ang bahay ay napuno ng away at hiya.",
+          choices: [
+            {
+              text: "Humingi ng tulong kay Angeline at sa mga kaibigan para ayusin ang bahay.",
+              points: 24,
+              next: "day92",
+              good: true,
+            },
+            {
+              text: "Magdilim ang loob, iwasan ang problema, at hayaan na lang magdusa ang bahay.",
+              points: 16,
+              next: "day92",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "day92",
+          day: "Day 92",
+          title: "Katotohanan ni Angeline",
+          narrative:
+            "Nang makita ni Anyapot ang larawan ng bahay, kaagad siyang pumunta kay Angeline. Nagulat si Angeline nang makita ang bahay ngunit mas lalo siyang natakot nang nalaman niya na si Andreng ay ang anak niya sa dating asawa. Pinag-usapan nila ang katotohanan. Sa kasamaang palad, ang dating problema ay naging simula ng bagong pagkakaibigan at pag-ibig sa pamilya.",
+          choices: [
+            {
+              text: "Tiisin ang hirap, magpatawad, at sabayan ang pamilya sa pagbangon.",
+              points: 25,
+              next: "finale",
+              good: true,
+            },
+            {
+              text: "Magpupuyat sa galit at magpanggap na wala nang pag-asa.",
+              points: 15,
+              next: "finale",
+              good: false,
+            },
+          ],
+        },
+        {
+          id: "finale",
+          day: "Day 365",
+          title: "Ang Busilak na Pagtulong",
+          narrative:
+            "Mga taon ang lumipas. Nagbago na ang takbo ng buhay ni Andreng. Tumaas ang reputasyon ng FoodLoop at naging tanyag ang karinderya bilang isang lugar ng masarap na pagkain at mabait na serbisyo. Sa kabila ng lahat, nakita pa rin niya ang tatlong dating kaibigan niya na nakaupo sa sidewalk—si Carlong, Franko, at Hirkuliys, nakalugmok at walang bahay. Lumapit si Andreng at sinabi: 'Be a buddy, not a bully. Magkakaroon ka ng pag-asa kung magsisimula kang tumulong.'",
+          choices: [
+            {
+              text: "Tulungan sila at ibahagi ang aral ng buhay.",
+              points: 25,
+              next: "ending",
+              good: true,
+            },
+            {
+              text: "Iwan silang mag-isa at hindi na sila pakialaman.",
+              points: 15,
+              next: "ending",
+              good: false,
+            },
+          ],
+        },
+      ];
+
+      const state = {
+        currentPlayer: null,
+        sceneIndex: 0,
+        timeLeft: 300,
+        points: 0,
+        totalSecondsPlayed: 0,
+        keys: 0,
+        hasSeenSecret: false,
+        ended: false,
+        goodKarma: 0,
+        timerId: null,
+      };
+
+      const screens = {
+        menu: document.getElementById("menu-screen"),
+        signin: document.getElementById("signin-screen"),
+        game: document.getElementById("game-screen"),
+        board: document.getElementById("board-screen"),
+        ending: document.getElementById("ending-screen"),
+        secret: document.getElementById("secret-scene"),
+      };
+
+      const els = {
+        narration: document.getElementById("narration-box"),
+        sceneBadge: document.getElementById("scene-badge"),
+        sceneTitle: document.getElementById("scene-title"),
+        choiceContainer: document.getElementById("choice-container"),
+        playerName: document.getElementById("player-name"),
+        dayDisplay: document.getElementById("day-display"),
+        pointsDisplay: document.getElementById("points-display"),
+        timerDisplay: document.getElementById("timer-display"),
+        keysDisplay: document.getElementById("keys-display"),
+        longestList: document.getElementById("longest-list"),
+        pointsList: document.getElementById("points-list"),
+        boardMessage: document.getElementById("board-message"),
+        endingTitle: document.getElementById("ending-title"),
+        endingText: document.getElementById("ending-text"),
+      };
+
+      function showScreen(name) {
+        Object.entries(screens).forEach(([screenName, screen]) => {
+          screen.classList.toggle("active", screenName === name);
+        });
+      }
+
+      function loadPlayers() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }
+
+      function savePlayers(players) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+      }
+
+      function upsertPlayer(player) {
+        const players = loadPlayers();
+        const index = players.findIndex((entry) => entry.lrn === player.lrn);
+
+        if (index >= 0) {
+          players[index] = { ...players[index], ...player };
+        } else {
+          players.push(player);
+        }
+
+        savePlayers(players);
+      }
+
+      function renderLeaderboard() {
+        const players = loadPlayers();
+
+        const longest = [...players]
+          .sort((a, b) => (b.longestPlayed || 0) - (a.longestPlayed || 0))
+          .slice(0, 10);
+
+        const topPoints = [...players]
+          .sort((a, b) => (b.points || 0) - (a.points || 0))
+          .slice(0, 10);
+
+        els.longestList.innerHTML = longest.length
+          ? longest
+              .map(
+                (player, index) =>
+                  `<li>${index + 1}. ${player.name || "Player"} - ${formatSeconds(player.longestPlayed || 0)}</li>`
+              )
+              .join("")
+          : "<li>Wala pang manlalaro.</li>";
+
+        els.pointsList.innerHTML = topPoints.length
+          ? topPoints
+              .map(
+                (player, index) => `<li>${index + 1}. ${player.name || "Player"} - ${player.points || 0} pts</li>`
+              )
+              .join("")
+          : "<li>Wala pang mataas na puntos.</li>";
+      }
+
+      function formatSeconds(value) {
+        const minutes = Math.floor(value / 60);
+        const seconds = value % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function showMenu() {
+        showScreen("menu");
+        renderLeaderboard();
+      }
+
+      function showSignin() {
+        showScreen("signin");
+      }
+
+      function getCurrentPlayerProfile() {
+        return state.currentPlayer || {
+          name: "Guest",
+          lrn: "guest",
+          points: 0,
+          longestPlayed: 0,
+          keys: 0,
+        };
+      }
+
+      function startTimer() {
+        clearInterval(state.timerId);
+        state.timerId = setInterval(() => {
+          if (state.timeLeft > 0) {
+            state.timeLeft -= 1;
+            state.totalSecondsPlayed += 1;
+            const display = `${String(Math.floor(state.timeLeft / 60)).padStart(2, "0")}:${String(
+              state.timeLeft % 60
+            ).padStart(2, "0")}`;
+            els.timerDisplay.textContent = display;
+
+            if (state.currentPlayer) {
+              state.currentPlayer.longestPlayed = Math.max(
+                state.currentPlayer.longestPlayed || 0,
+                state.totalSecondsPlayed
+              );
+            }
+          } else {
+            clearInterval(state.timerId);
+            completeDayWithDefaultDecision();
+          }
+        }, 1000);
+      }
+
+      function completeDayWithDefaultDecision() {
+        const scene = story[state.sceneIndex];
+        if (!scene) return;
+
+        const safeChoice = scene.choices.find((choice) => choice.good) || scene.choices[0];
+        applyChoice(safeChoice);
+      }
+
+      function updateHUD() {
+        const player = getCurrentPlayerProfile();
+        els.playerName.textContent = player.name || "Guest";
+        els.dayDisplay.textContent = story[state.sceneIndex]?.day || "Day 1";
+        els.pointsDisplay.textContent = String(state.points);
+        els.keysDisplay.textContent = String(state.keys);
+        els.timerDisplay.textContent = formatSeconds(state.timeLeft);
+      }
+
+      function renderScene() {
+        if (state.sceneIndex >= story.length) {
+          return;
+        }
+
+        const scene = story[state.sceneIndex];
+        const currentPlayer = getCurrentPlayerProfile();
+
+        els.sceneBadge.textContent = scene.day;
+        els.sceneTitle.textContent = scene.title;
+        els.narration.textContent = scene.narrative;
+        els.choiceContainer.innerHTML = "";
+
+        scene.choices.forEach((choice) => {
+          const button = document.createElement("button");
+          button.className = "choice-btn";
+          button.textContent = `${choice.text} (+${choice.points} pts)`;
+          button.addEventListener("click", () => applyChoice(choice));
+          els.choiceContainer.appendChild(button);
+        });
+
+        els.dayDisplay.textContent = scene.day;
+        els.playerName.textContent = currentPlayer.name;
+        updateHUD();
+      }
+
+      function applyChoice(choice) {
+        if (state.ended) return;
+
+        state.points += Number(choice.points || 0);
+        if (choice.good) {
+          state.goodKarma += 1;
+        }
+
+        if (state.sceneIndex < story.length - 1) {
+          state.sceneIndex += 1;
+          state.timeLeft = 300;
+          const currentPlayer = getCurrentPlayerProfile();
+
+          if (state.currentPlayer) {
+            state.currentPlayer.points = state.points;
+            state.currentPlayer.longestPlayed = Math.max(
+              state.currentPlayer.longestPlayed || 0,
+              state.totalSecondsPlayed
+            );
+            upsertPlayer(state.currentPlayer);
+          }
+
+          renderScene();
+          startTimer();
+        } else {
+          finishGame();
+        }
+      }
+
+      function finishGame() {
+        clearInterval(state.timerId);
+        state.ended = true;
+
+        if (state.currentPlayer) {
+          state.currentPlayer.points = state.points;
+          state.currentPlayer.longestPlayed = Math.max(
+            state.currentPlayer.longestPlayed || 0,
+            state.totalSecondsPlayed
+          );
+          upsertPlayer(state.currentPlayer);
+        }
+
+        const isGoodEnding = state.goodKarma >= 4 || state.points >= 140;
+
+        if (isGoodEnding) {
+          els.endingTitle.textContent = "Good Ending: Ang Iyong Pagsusumikap ay Nakita ng Mundo";
+          els.endingText.textContent =
+            "Naging matagumpay si Andreng at napatunayan niya na ang tiyaga, katapatan, at pagmamahal sa pamilya ay higit pa sa pera. Sa tulong ni Angeline, ni Anyapot, at ng kanyang ama, nanatiling matatag ang FoodLoop at naging inspirasyon siya sa marami. Hindi lang siya nakabangon, kundi nakatulong din sa iba. 'Be a buddy, not a bully' ang kanyang tatak sa puso ng lahat.";
+        } else {
+          els.endingTitle.textContent = "Bad Ending: Ang Maling Desisyon ay Dapat Bayaran";
+          els.endingText.textContent =
+            "Sa kabila ng mga pagsubok, ang kanyang mga maling desisyon ay nagdulot ng pagkasira sa tiwala at sa negosyo. Kumikilos man siya sa takot, natuto rin siya na ang kapangyarihan ng pera ay hindi sapat kung kulang ang disiplina at katapatan. Ang kanyang kwento ay isang paalala na ang bawat desisyon ay may epekto sa hinaharap.";
+        }
+
+        if (state.currentPlayer) {
+          state.currentPlayer.keys = Math.min(3, Math.floor(state.points / 80));
+          state.keys = state.currentPlayer.keys;
+          upsertPlayer(state.currentPlayer);
+        }
+
+        showScreen("ending");
+        renderLeaderboard();
+      }
+
+      function beginGame() {
+        if (!state.currentPlayer) {
+          alert("Mag-sign in muna bago maglaro.");
+          showSignin();
+          return;
+        }
+
+        state.sceneIndex = 0;
+        state.points = 0;
+        state.goodKarma = 0;
+        state.timeLeft = 300;
+        state.totalSecondsPlayed = 0;
+        state.ended = false;
+        state.keys = state.currentPlayer.keys || 0;
+
+        renderScene();
+        startTimer();
+        showScreen("game");
+      }
+
+      function convertPointsToKey() {
+        if (!state.currentPlayer) {
+          els.boardMessage.textContent = "Mag-sign in muna para i-convert ang points.";
+          return;
+        }
+
+        const currentPlayer = state.currentPlayer;
+        const pointsAvailable = currentPlayer.points || state.points || 0;
+
+        if (pointsAvailable >= 80) {
+          const earnedKeys = Math.floor(pointsAvailable / 80);
+          currentPlayer.keys = (currentPlayer.keys || 0) + earnedKeys;
+          currentPlayer.points = Math.max(0, pointsAvailable - earnedKeys * 80);
+          state.keys = currentPlayer.keys;
+          upsertPlayer(currentPlayer);
+          els.boardMessage.textContent = `Nakakuha ka ng ${earnedKeys} key! Puntos mo ay na-convert na.`;
+        } else {
+          els.boardMessage.textContent = "Kulang pa ang points mo para makakuha ng key.";
+        }
+
+        renderLeaderboard();
+        updateHUD();
+      }
+
+      function openSecretScene() {
+        if (!state.currentPlayer) {
+          els.boardMessage.textContent = "Mag-sign in muna para buksan ang secret cutscene.";
+          return;
+        }
+
+        const keyCount = state.currentPlayer.keys || 0;
+        if (keyCount <= 0) {
+          els.boardMessage.textContent = "Kulang pa ang key mo. Mag-convert ng points para makuha ang secret cutscene.";
+          return;
+        }
+
+        state.hasSeenSecret = true;
+        showScreen("secret");
+      }
+
+      function handleSignIn(event) {
+        event.preventDefault();
+        const name = document.getElementById("student-name").value.trim();
+        const lrn = document.getElementById("student-lrn").value.trim();
+
+        if (!name || !lrn) {
+          alert("Punan ang pangalan at LRN.");
+          return;
+        }
+
+        const existing = loadPlayers().find((player) => player.lrn === lrn);
+        state.currentPlayer = existing
+          ? { ...existing, name }
+          : {
+              name,
+              lrn,
+              points: 0,
+              longestPlayed: 0,
+              keys: 0,
+            };
+
+        upsertPlayer(state.currentPlayer);
+        renderLeaderboard();
+        showMenu();
+        document.getElementById("signin-form").reset();
+      }
+
+      function bindEvents() {
+        document.getElementById("signin-btn").addEventListener("click", showSignin);
+        document.getElementById("play-btn").addEventListener("click", beginGame);
+        document.getElementById("leaderboard-btn").addEventListener("click", () => {
+          renderLeaderboard();
+          showScreen("board");
+        });
+        document.getElementById("back-to-menu").addEventListener("click", showMenu);
+        document.getElementById("board-back-btn").addEventListener("click", showMenu);
+        document.getElementById("ending-back-btn").addEventListener("click", showMenu);
+        document.getElementById("secret-back-btn").addEventListener("click", showMenu);
+        document.getElementById("convert-points-btn").addEventListener("click", convertPointsToKey);
+        document.getElementById("secret-scene-btn").addEventListener("click", openSecretScene);
+        document.getElementById("signin-form").addEventListener("submit", handleSignIn);
+      }
+
+      bindEvents();
+      renderLeaderboard();
+      showMenu();
+      updateHUD();
+    </script>
   </body>
 </html>
