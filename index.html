@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karinderya ni Andreng</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="game-shell">
+      <div id="scene-layer" class="scene-layer hidden"></div>
+      <div id="menu-screen" class="screen active">
+        <div class="menu-illustration">
+          <div class="pixel-art-house"></div>
+          <div class="pixel-art-table"></div>
+          <div class="pixel-art-stool"></div>
+        </div>
+
+        <div class="menu-panel">
+          <h1>Karinderya ni Andreng</h1>
+          <div class="menu-buttons">
+            <button id="signin-btn" class="primary-btn">Sign-in</button>
+            <button id="play-btn" class="primary-btn">Play</button>
+            <button id="leaderboard-btn" class="secondary-btn">Board</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="signin-screen" class="screen hidden">
+        <div class="panel">
+          <h2>Sign-in ng Estudyante</h2>
+          <form id="signin-form">
+            <label for="student-name">Pangalan:</label>
+            <input id="student-name" name="student-name" type="text" placeholder="Hal. Andreng Cruz" required />
+
+            <label for="student-lrn">LRN:</label>
+            <input id="student-lrn" name="student-lrn" type="text" placeholder="Hal. 123456789012" required />
+
+            <div class="button-row">
+              <button type="submit" class="primary-btn">Save</button>
+              <button type="button" id="back-to-menu" class="secondary-btn">Back</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="game-screen" class="screen hidden">
+        <header class="hud">
+          <div class="hud-item">
+            <span class="label">Player</span>
+            <strong id="player-name">-</strong>
+          </div>
+          <div class="hud-item">
+            <span class="label">Day</span>
+            <strong id="day-display">Day 1</strong>
+          </div>
+          <div class="hud-item">
+            <span class="label">Points</span>
+            <strong id="points-display">0</strong>
+          </div>
+          <div class="hud-item timer-box">
+            <span class="label">Timer</span>
+            <strong id="timer-display">05:00</strong>
+          </div>
+          <div class="hud-item">
+            <span class="label">Keys</span>
+            <strong id="keys-display">0</strong>
+          </div>
+        </header>
+
+        <div id="story-scene" class="story-scene">
+          <div class="scene-badge" id="scene-badge">Day 1</div>
+          <div class="scene-title" id="scene-title">Himigs ng Paaralan</div>
+          <div class="narration-box" id="narration-box"></div>
+          <div id="choice-container" class="choice-container"></div>
+        </div>
+      </div>
+
+      <div id="board-screen" class="screen hidden">
+        <div class="panel board-panel">
+          <h2>Board ng mga Manlalaro</h2>
+
+          <div class="board-columns">
+            <div class="leaderboard-card">
+              <h3>Longest Playing Player</h3>
+              <ol id="longest-list"></ol>
+            </div>
+
+            <div class="leaderboard-card">
+              <h3>Highest Points Achieved</h3>
+              <ol id="points-list"></ol>
+            </div>
+          </div>
+
+          <div class="board-actions">
+            <button id="convert-points-btn" class="primary-btn">Convert Points to Key</button>
+            <button id="secret-scene-btn" class="secondary-btn">Unlock Secret Cutscene</button>
+            <button id="board-back-btn" class="secondary-btn">Back to Menu</button>
+          </div>
+
+          <div id="board-message" class="board-message"></div>
+        </div>
+      </div>
+
+      <div id="ending-screen" class="screen hidden">
+        <div class="panel ending-panel">
+          <h2 id="ending-title">Ending</h2>
+          <div id="ending-text" class="narration-box ending-box"></div>
+          <button id="ending-back-btn" class="primary-btn">Back to Menu</button>
+        </div>
+      </div>
+
+      <div id="secret-scene" class="screen hidden">
+        <div class="panel secret-panel">
+          <div class="secret-badge">Achievement: Pass the History</div>
+          <h2>Andreng at ang Batang Nakita sa Kalsada</h2>
+          <div class="narration-box secret-box">
+            Isang bata ang nakatayo sa tabi ng kalsada, mag-isa at nanghihingi ng tulong. Sa kanyang paglapit, nakita ni Andreng ang lakas ng pag-asa sa mata ng bata. "Kung ang buhay ay may sukat ng hirap, may sukat din ng pagbangon," sabi niya. Sa sandaling iyon, naunawaan niya na ang tunay na tagumpay ay hindi ang pera lamang kundi ang pagtulong sa iba.
+          </div>
+          <button id="secret-back-btn" class="primary-btn">Back to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
